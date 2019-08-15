@@ -86,7 +86,7 @@ def load_pretrained(model, fname, optimizer=None):
     else:
         print("=> no checkpoint found at '{}'".format(fname))
 
-def load_vgg16pretrain(model, vggmodel='vgg16convs.mat'):
+def load_vgg16pretrain(model, vggmodel='/mnt/ckpt/RCF-VGGNET/vgg16convs.mat'):
     vgg16 = sio.loadmat(vggmodel)
     torch_params =  model.state_dict()
     for k in vgg16.keys():
