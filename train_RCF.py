@@ -19,6 +19,7 @@ matplotlib.use('Agg')
 import matplotlib.pyplot as plt
 from data_loader import BSDS_RCFLoader
 from models import RCF
+import RESNET
 from functions import  cross_entropy_loss_RCF, SGD_caffe
 from torch.utils.data import DataLoader, sampler
 from utils import Logger, Averagvalue, save_checkpoint, load_vgg16pretrain
@@ -52,6 +53,8 @@ parser.add_argument('--gpu', default='0', type=str,
 parser.add_argument('--resume', default='/mnt/ckpt/RCF-VGGNET/RCFcheckpoint_epoch12.pth', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
 parser.add_argument('--tmp', help='tmp folder', default='/mnt/ckpt/tmp/RCF-py')
+parser.add_argument('--lastlayer', help='Is supervision only on the final layer', default=False)
+parser.add_argument('--model', help='Backbone (VGG16, RESNET, HRNET)', default='VGG16')
 # ================ dataset
 parser.add_argument('--dataset', help='root folder of dataset', default='/mnt/ckpt/data/HED-BSDS_PASCAL')
 args = parser.parse_args()
@@ -81,9 +84,12 @@ def main():
     assert len(test_list) == len(test_loader), "%d vs %d" % (len(test_list), len(test_loader))
 
     # model
-    model = RCF()
-    model.cuda()
-    model.apply(weights_init)
+    if args.model == 'VGG16':
+        model = RCF()
+        model.cuda()
+        model.apply(weights_init)
+    else:
+        model = models.resnet101(pretrained=True).cuda()
     #load_vgg16pretrain(model)
     if args.resume:
         if isfile(args.resume): 
@@ -242,8 +248,9 @@ def train(train_loader, model, optimizer, epoch, save_dir):
         image, label = image.cuda(), label.cuda()
         outputs = model(image)
         loss = torch.zeros(1).cuda()
-        for o in outputs:
-            loss = loss + cross_entropy_loss_RCF(o, label)
+        loss = cross_entropy_loss_RCF(outputs[-1], label)
+        #for o in outputs:
+        #    loss = loss + cross_entropy_loss_RCF(o, label)
         counter += 1
         loss = loss / args.itersize
         loss.backward()
