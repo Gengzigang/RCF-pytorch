@@ -49,9 +49,9 @@ parser.add_argument('--print_freq', '-p', default=1000, type=int,
                     metavar='N', help='print frequency (default: 50)')
 parser.add_argument('--gpu', default='0', type=str,
                     help='GPU ID')
-parser.add_argument('--resume', default='don/mnt/ckpt/RCF-VGGNET/RCFcheckpoint_epoch12.pth', type=str, metavar='PATH',
+parser.add_argument('--resume', default='/mnt/ckpt/RCF-VGGNET/RCFcheckpoint_epoch12.pth', type=str, metavar='PATH',
                     help='path to latest checkpoint (default: none)')
-parser.add_argument('--tmp', help='tmp folder', default='/mnt/ckpt/tmp/RCF')
+parser.add_argument('--tmp', help='tmp folder', default='/mnt/ckpt/tmp/RCF-py')
 # ================ dataset
 parser.add_argument('--dataset', help='root folder of dataset', default='/mnt/ckpt/data/HED-BSDS_PASCAL')
 args = parser.parse_args()
