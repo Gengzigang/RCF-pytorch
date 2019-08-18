@@ -24,6 +24,7 @@ from functions import  cross_entropy_loss_RCF, SGD_caffe
 from torch.utils.data import DataLoader, sampler
 from utils import Logger, Averagvalue, save_checkpoint, load_vgg16pretrain
 from os.path import join, split, isdir, isfile, splitext, split, abspath, dirname
+import torch.utils.model_zoo as model_zoo
 
 parser = argparse.ArgumentParser(description='PyTorch Training')
 parser.add_argument('--batch_size', default=1, type=int, metavar='BT',
@@ -82,12 +83,13 @@ def main():
         test_list = f.readlines()
     test_list = [split(i.rstrip())[1] for i in test_list]
     assert len(test_list) == len(test_loader), "%d vs %d" % (len(test_list), len(test_loader))
-
+    
     # model
     if args.model == 'VGG16':
         model = RCF()
         model.cuda()
         model.apply(weights_init)
+        model.load_state_dict(model_zoo.load_url(https://download.pytorch.org/models/vgg16-397923af.pth))
     else:
         model = models.resnet101(pretrained=True).cuda()
     #load_vgg16pretrain(model)
